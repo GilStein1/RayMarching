@@ -63,13 +63,15 @@ public class Window extends JPanel {
         }
         constructed = true;
         light = new Vec3D(1,0,0);
-        threads = new Thread[4];
+        threads = new Thread[8];
 
         threads[0] = new Thread(() -> {
 
             while (true) {
                 if(shapeList != null && tostart) {
-                    render(0,225);
+//                    render(0,112);
+//                    render(0,112/2);
+                    render(0,defaultScreenWidth/4);
                     d1 = true;
                 }
 
@@ -80,7 +82,9 @@ public class Window extends JPanel {
 
             while (true) {
                 if(shapeList != null && tostart) {
-                    render(225,450);
+//                    render(112,224);
+//                    render(112/2,224/2);
+                    render(defaultScreenWidth/4,2*defaultScreenWidth/4);
                     d2 = true;
                 }
 
@@ -91,7 +95,9 @@ public class Window extends JPanel {
 
             while (true) {
                 if(shapeList != null && tostart) {
-                    render(450,675);
+//                    render(224,336);
+//                    render(224/2,336/2);
+                    render(2*defaultScreenWidth/4,3*defaultScreenWidth/4);
                     d3 = true;
                 }
 
@@ -102,13 +108,63 @@ public class Window extends JPanel {
 
             while (true) {
                 if(shapeList != null && tostart) {
-                    render(675,900);
+//                    render(336,448);
+//                    render(336/2,448/2);
+                    render(3*defaultScreenWidth/4,4*defaultScreenWidth/4);
                     d4 = true;
                 }
 
             }
 
         });
+//        threads[4] = new Thread(() -> {
+//
+//            while (true) {
+//                if(shapeList != null && tostart) {
+////                    render(448,560);
+//                    render(448/2,560/2);
+//                    d4 = true;
+//                }
+//
+//            }
+//
+//        });
+//        threads[5] = new Thread(() -> {
+//
+//            while (true) {
+//                if(shapeList != null && tostart) {
+////                    render(560,672);
+//                    render(560/2,672/2);
+//                    d4 = true;
+//                }
+//
+//            }
+//
+//        });
+//        threads[6] = new Thread(() -> {
+//
+//            while (true) {
+//                if(shapeList != null && tostart) {
+////                    render(672,784);
+//                    render(672/2,784/2);
+//                    d4 = true;
+//                }
+//
+//            }
+//
+//        });
+//        threads[7] = new Thread(() -> {
+//
+//            while (true) {
+//                if(shapeList != null && tostart) {
+////                    render(784,900);
+//                    render(784/2,900/2);
+//                    d4 = true;
+//                }
+//
+//            }
+//
+//        });
 
 
 
@@ -606,6 +662,10 @@ public class Window extends JPanel {
             threads[1].start();
             threads[2].start();
             threads[3].start();
+//            threads[4].start();
+//            threads[5].start();
+//            threads[6].start();
+//            threads[7].start();
 
 //            if(d1){
 //                d1 = false;
