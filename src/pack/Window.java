@@ -41,6 +41,8 @@ public class Window extends JPanel {
 
         try {
             sky = ImageIO.read(getClass().getResourceAsStream("/sky sphere.jpg"));
+//                    sky = ImageIO.read(getClass().getResourceAsStream("/8da92e07cc15da40292b44541affe466da6cb843.jpeg"));
+//            sky = ImageIO.read(getClass().getResourceAsStream("/360_F_406509204_zEAiqnsDuRbNiHAMKYCrgc96hzucEpb4.jpg"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
