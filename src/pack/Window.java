@@ -1,8 +1,13 @@
 package pack;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class Window extends JPanel {
 
@@ -22,8 +27,23 @@ public class Window extends JPanel {
     private Component lightSource;
     private Vec3D light;
     private Thread[] threads;
+    private BufferedImage sky;
+    boolean tostart = false;
+
+    boolean d1 = true;
+    boolean d2 = true;
+    boolean d3 = true;
+    boolean d4 = true;
 
     private Window() {
+
+
+
+        try {
+            sky = ImageIO.read(getClass().getResourceAsStream("/sky sphere.jpg"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         shapeList = new java.util.ArrayList<>();
         cameraPos = new Vec3D(0,0,0);
@@ -43,55 +63,86 @@ public class Window extends JPanel {
         }
         constructed = true;
         light = new Vec3D(1,0,0);
-        threads = new Thread[3];
+        threads = new Thread[4];
 
         threads[0] = new Thread(() -> {
 
-            if (true) {
-                if(shapeList != null && shapeList.size() != 0) {
-                    render(0,900);
+            while (true) {
+                if(shapeList != null && tostart) {
+                    render(0,225);
+                    d1 = true;
+                }
+
+            }
+
+        });
+        threads[1] = new Thread(() -> {
+
+            while (true) {
+                if(shapeList != null && tostart) {
+                    render(225,450);
+                    d2 = true;
+                }
+
+            }
+
+        });
+        threads[2] = new Thread(() -> {
+
+            while (true) {
+                if(shapeList != null && tostart) {
+                    render(450,675);
+                    d3 = true;
+                }
+
+            }
+
+        });
+        threads[3] = new Thread(() -> {
+
+            while (true) {
+                if(shapeList != null && tostart) {
+                    render(675,900);
+                    d4 = true;
                 }
 
             }
 
         });
 
-//        threads[1] = new Thread(() -> {
-//
-//            if (true) {
-//                if(shapeList != null && shapeList.size() != 0) {
-//                    render(300,600);
-//                }
-//
-//            }
-//
-//        });
-//
-//        threads[2] = new Thread(() -> {
-//
-//            if (true) {
-//                if(shapeList != null && shapeList.size() != 0) {
-//                    render(600,900);
-//                }
-//            }
-//
-//        });
 
-//        threads[3] = new Thread(() -> {
-//
-//            while (true) {
-//                if(shapeList != null && shapeList.size() != 0) {
-//                    render(705,900);
-//                }
-//            }
-//
-//        });
 
-//        for(Thread t : threads) {
-//            t.start();
-//            //waitInSeconds(0.01);
-//            System.out.println("started");
-//        }
+        frame.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                int keyCode = e.getKeyCode();
+                if (keyCode == KeyEvent.VK_W) {
+                    cameraPos.z -= 1;
+                }
+                if (keyCode == KeyEvent.VK_S) {
+                    cameraPos.z += 1;
+                }
+                if (keyCode == KeyEvent.VK_D) {
+                    cameraPos.x -= 1;
+                }
+                if (keyCode == KeyEvent.VK_A) {
+                    cameraPos.x += 1;
+                }
+                if (keyCode == KeyEvent.VK_SPACE) {
+                    cameraPos.y += 1;
+                }
+                if (keyCode == KeyEvent.VK_SHIFT) {
+                    cameraPos.y -= 1;
+                }
+//                if (keyCode == KeyEvent.VK_LEFT) {
+//                    cameraRotation.y += 1;
+//                }
+//                if (keyCode == KeyEvent.VK_RIGHT) {
+//                    cameraRotation.y -= 1;
+//                }
+
+            }
+        });
+
 
     }
     public static Window getInstance() {
@@ -102,7 +153,7 @@ public class Window extends JPanel {
     }
     public Component rayMarch(Ray ray) {
 
-        System.out.println(ray);
+//        System.out.println(ray);
 
         double minDistance = 0;
 
@@ -120,7 +171,18 @@ public class Window extends JPanel {
         y = 0;
         z = 0;
 
+//        System.out.println("_______");
+
+//        System.out.println(Math.toDegrees(Math.atan2(d.z,d.x)));
+//        System.out.println(Math.toDegrees(Math.atan2(d.y,Math.sqrt(d.x*d.x + d.z*d.z))));
+//        System.out.println(d.y);
+//        if(d.z > 0.5) {
+//            System.out.println(d.z);
+//        }
+
         while (stop) {
+
+//            System.out.println(pos);
 
             minDistance = shapeList.get(0).getEstimatedDistance(pos);
             closest = shapeList.get(0);
@@ -139,20 +201,22 @@ public class Window extends JPanel {
 
 //            x = (xz < 0)? 1 : -1;
 
+//            System.out.println(minDistance);
+
 
             x = d.x * minDistance;
             y = d.y * minDistance;
             z = d.z * minDistance;
 
 
-            pos.x = pos.x + x;
-            pos.y = pos.y + y;
-            pos.z = pos.z + z;
+            pos.x = pos.x - x;
+            pos.y = pos.y - y;
+            pos.z = pos.z - z;
 
-            stop = !((minDistance < 0.02) || (minDistance > 600));
+            stop = !((minDistance < 0.0002) || (minDistance > 100));
         }
 
-        if(minDistance > 600) {
+        if(minDistance > 100) {
             closest = null;
         }
         else {
@@ -302,25 +366,37 @@ public class Window extends JPanel {
                 Vec3D[] points = new Vec3D[3];
 
                 if(shapeList != null && shapeList.size() != 0) {
-                    temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0, ((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0,cameraPos);
+                    //temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0, ((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0,cameraPos);
 
-                    //temp = rayMarch(new Ray(new Vec3D(Math.sin(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.sin(Math.toRadians((((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0)))),cameraPos));
+                    Ray r = new Ray(cameraPos,new Vec3D(Math.sin(Math.toRadians(cameraRotation.y + ((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.sin(Math.toRadians(cameraRotation.x +(((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0))),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0))));
+
+                    temp = rayMarch(new Ray(cameraPos,new Vec3D(Math.sin(Math.toRadians(cameraRotation.y + ((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.sin(Math.toRadians(cameraRotation.x +(((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0))),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)))));
+
+//                    if(temp != null) {
+//                        colorArray[i][j] = temp.getColor();
+//                    }
+//                    else {
+//                        colorArray[i][j] = Color.BLACK;
+//                    }
+
+//                    System.out.println(((i+1)/ (double)colorArray.length)*fov - fov/2.0);
+                    //System.out.println(((((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0)));
 
                     if(temp != null) {
 
                         points[0] = new Vec3D(temp.getHitPoint());
 
-                        temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0 + 0.1, (((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0),cameraPos);
+                        //temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0 + 0.1, (((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0),cameraPos);
 
-                        //temp = rayMarch(new Ray(new Vec3D(Math.sin(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0 + 0.1)),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.sin(Math.toRadians((((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0)))),cameraPos));
+                        temp = rayMarch(new Ray(cameraPos,new Vec3D(Math.sin(Math.toRadians(cameraRotation.y + ((i+1)/ (double)colorArray.length)*fov - fov/2.0 + 0.1)),Math.sin(Math.toRadians(cameraRotation.x +(((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0))),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)))));
 
 
                         if(temp != null) {
                             points[1] = new Vec3D(temp.getHitPoint());
 
-                            temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0, ((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0 + 0.1,cameraPos);
+                            //temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0, ((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0 + 0.1,cameraPos);
 
-                            //temp = rayMarch(new Ray(new Vec3D(Math.sin(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.sin(Math.toRadians((((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0 + 0.1)))),cameraPos));
+                            temp = rayMarch(new Ray(cameraPos,new Vec3D(Math.sin(Math.toRadians(cameraRotation.y + ((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.sin(Math.toRadians(cameraRotation.x + (((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0 + 0.1))),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)))));
 
                             if(temp != null) {
 
@@ -339,9 +415,36 @@ public class Window extends JPanel {
                                 tempp[1] /= l;
                                 tempp[2] /= l;
 
+                                double dotP = tempp[0]*r.getDirection().x + tempp[1]*r.getDirection().y + tempp[2]*r.getDirection().z;
+
+                                double rx = r.getDirection().x - 2*dotP*tempp[0];
+                                double ry = r.getDirection().y - 2*dotP*tempp[1];
+                                double rz = r.getDirection().z - 2*dotP*tempp[2];
+
+                                Ray ref = new Ray(temp.getHitPoint(),new Vec3D(rx,ry,rz));
+
+                                Component hit2 = rayMarch(ref);
+
+                                if(hit2 != null) {
+
+//                                    System.out.println("sky");
+
+                                    int u = (int)((0.5 + Math.atan2(ref.getDirection().z,ref.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
+                                    int v = (int)((0.5 + Math.asin(ref.getDirection().y)/Math.PI)*sky.getHeight());
+
+//                                System.out.println("(" + u + "," + v + ")");
+
+                                    colorArray[i][j] = new Color((int)(temp.getColor().getRed()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getColor().getGreen()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getColor().getBlue()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+
+                                }
+                                else {
+//                                    colorArray[i][j] = temp.getColor();
+                                    colorArray[i][j] = Color.BLACK;
+                                }
+
                                 //double colorMultiplier = Math.abs(((light.x) * (tempp[0]) + light.y*tempp[1] + light.z*tempp[2] + 30)/60.0);
 
-                                double colorMultiplier = ((light.x) * (tempp[0]) + light.y*tempp[1] + light.z*tempp[2] + 1)/2.0;
+//                                double colorMultiplier = ((light.x) * (tempp[0]) + light.y*tempp[1] + light.z*tempp[2] + 1)/2.0;
 
                                 //System.out.println((light.x) * (tempp[0]) + light.y*tempp[1] + light.z*tempp[2] < 0);
 
@@ -352,22 +455,42 @@ public class Window extends JPanel {
 
                                 //colorArray[i][j] = new Color((int)(temp.getColor().getRed()*colorMultiplier),(int)(temp.getColor().getGreen()*colorMultiplier),(int)(temp.getColor().getBlue()*colorMultiplier));
 
-                                colorArray[i][j] = new Color((int)(colorMultiplier*255),(int)(colorMultiplier*255),(int)(colorMultiplier*255));
+//                                colorArray[i][j] = new Color((int)(colorMultiplier*255),(int)(colorMultiplier*255),(int)(colorMultiplier*255));
+//                                colorArray[i][j] = temp.getColor();
                             }
                             else {
-                                colorArray[i][j] = Color.BLACK;
+
+                                int u = (int)((0.5 + Math.atan2(r.getDirection().z,r.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
+                                int v = (int)((0.5 + Math.asin(r.getDirection().y)/Math.PI)*sky.getHeight());
+
+//                                System.out.println("(" + u + "," + v + ")");
+
+                                colorArray[i][j] = new Color((sky.getRGB(u,v) >> 16) & 0xFF,(sky.getRGB(u,v) >> 8) & 0xFF,(sky.getRGB(u,v)) & 0xFF);
+//                                System.out.println(colorArray[i][j]);
                             }
 
 
                         }
                         else {
-                            colorArray[i][j] = Color.BLACK;
+                            int u = (int)((0.5 + Math.atan2(r.getDirection().z,r.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
+                            int v = (int)((0.5 + Math.asin(r.getDirection().y)/Math.PI)*sky.getHeight());
+
+//                                System.out.println("(" + u + "," + v + ")");
+
+                            colorArray[i][j] = new Color((sky.getRGB(u,v) >> 16) & 0xFF,(sky.getRGB(u,v) >> 8) & 0xFF,(sky.getRGB(u,v)) & 0xFF);
+//                                System.out.println(colorArray[i][j]);
                         }
 
 
                     }
                     else {
-                        colorArray[i][j] = Color.BLACK;
+                        int u = (int)((0.5 + Math.atan2(r.getDirection().z,r.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
+                        int v = (int)((0.5 + Math.asin(r.getDirection().y)/Math.PI)*sky.getHeight());
+
+//                                System.out.println("(" + u + "," + v + ")");
+
+                        colorArray[i][j] = new Color((sky.getRGB(u,v) >> 16) & 0xFF,(sky.getRGB(u,v) >> 8) & 0xFF,(sky.getRGB(u,v)) & 0xFF);
+//                                System.out.println(colorArray[i][j]);
                     }
                 }
 
@@ -472,8 +595,35 @@ public class Window extends JPanel {
             }
         }
 
-        System.out.println("rendered");
+//        System.out.println("rendered");
 
+    }
+    public void render() {
+
+        if(shapeList.size() > 0 && constructed) {
+
+            threads[0].start();
+            threads[1].start();
+            threads[2].start();
+            threads[3].start();
+
+//            if(d1){
+//                d1 = false;
+//                threads[0].start();
+//            }
+//            if(d2){
+//                d2 = false;
+//                threads[1].start();
+//            }
+//            if(d3){
+//                d3 = false;
+//                threads[2].start();
+//            }
+//            if(d4){
+//                d4 = false;
+//                threads[3].start();
+//            }
+        }
     }
 
     @Override
@@ -487,23 +637,38 @@ public class Window extends JPanel {
         Graphics2D graphicsThing = screen.createGraphics();
 
 
-        if(shapeList.size() > 0 && constructed) {
-
-            threads[0].run();
-
-            //render();
-
-//            for(Thread t : threads) {
-//                t.run();
+//        if(shapeList.size() > 0 && constructed) {
+//
+//            if(!threads[0].isAlive()){
+//                threads[0].start();
 //            }
-        }
+//            if(!threads[1].isAlive()){
+//                threads[1].start();
+//            }
+//            if(!threads[2].isAlive()){
+//                threads[2].start();
+//            }
+//            if(!threads[3].isAlive()){
+//                threads[3].start();
+//            }
+//
+//            //render();
+//
+////            for(Thread t : threads) {
+////                t.run();
+////            }
+//        }
 
         //System.out.println("rendered");
 
-        for(int i = 0; i < colorArray.length; i++) {
-            for(int j = 0; j < colorArray[i].length; j++) {
-                graphicsThing.setColor(colorArray[i][j]);
-                graphicsThing.fillRect(i,j,1,1);
+
+
+        if(true) {
+            for(int i = 0; i < colorArray.length; i++) {
+                for(int j = 0; j < colorArray[i].length; j++) {
+                    graphicsThing.setColor(colorArray[i][j]);
+                    graphicsThing.fillRect(i,j,1,1);
+                }
             }
         }
 
@@ -519,6 +684,7 @@ public class Window extends JPanel {
 
     public void add(Component component) {
         shapeList.add(component);
+        tostart = true;
         //System.out.println(component.isALightSource());
         if(component.isALightSource()) {
             lightSource = component;

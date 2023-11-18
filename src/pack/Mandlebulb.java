@@ -104,4 +104,14 @@ public class Mandlebulb implements Component{
     public void setPosition(Vec3D pos) {
         this.pos = pos;
     }
+
+    @Override
+    public boolean isShape() {
+        return false;
+    }
+
+    @Override
+    public double getReflection() {
+        return 0;
+    }
 }

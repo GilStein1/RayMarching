@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="RayMarching:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/RayMarching_jar</output-path>
+    <root id="archive" name="RayMarching.jar">
+      <element id="module-output" name="RayMarching" />
+    </root>
+  </artifact>
+</component>

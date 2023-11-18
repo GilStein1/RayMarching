@@ -9,11 +9,13 @@ public class Shape implements Component{
     Window w;
     Vec3D pos;
     Vec3D hit;
+    double reflection = 0.7;
     double mergeParameter;
 
-    public Shape(Component com1, Component com2, Color color,double mergeParameter) {
+    public Shape(Component com1, Component com2, Color color,double mergeParameter,double reflection) {
 
         w = Window.getInstance();
+        this.reflection = reflection;
         c = color;
         coms = new Component[]{com1,com2};
 
@@ -36,6 +38,10 @@ public class Shape implements Component{
     @Override
     public double getEstimatedDistance(Vec3D point) {
         //return Math.min(coms[0].getEstimatedDistance(point), 1* coms[1].getEstimatedDistance(point));
+        if(mergeParameter == 0) {
+            return Math.min(coms[0].getEstimatedDistance(point), 1* coms[1].getEstimatedDistance(point));
+        }
+
         return (smoothMin(coms[0].getEstimatedDistance(point),coms[1].getEstimatedDistance(point),mergeParameter));
     }
 
@@ -72,5 +78,15 @@ public class Shape implements Component{
     @Override
     public void setPosition(Vec3D pos) {
 
+    }
+
+    @Override
+    public boolean isShape() {
+        return true;
+    }
+
+    @Override
+    public double getReflection() {
+        return reflection;
     }
 }

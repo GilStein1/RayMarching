@@ -11,6 +11,7 @@ public class Torus implements Component{
     boolean isLightSource;
     Vec3D hit;
     Vec3D rotation;
+    double reflection;
 
     public Torus(Vec3D position, Vec3D rotation, Vec2D dimensions, Color color, boolean emitsLight) {
         pos = position;
@@ -20,8 +21,9 @@ public class Torus implements Component{
         setParams();
         this.rotation = rotation;
     }
-    public Torus(double x, double y, double z, double xRotation, double yRotation, double zRotation, Vec2D dimensions, Color color, boolean emitsLight) {
+    public Torus(double x, double y, double z, double xRotation, double yRotation, double zRotation, Vec2D dimensions, Color color, boolean emitsLight,double reflection) {
         pos = new Vec3D(x,y,z);
+        this.reflection = reflection;
         this.dimensions = dimensions;
         c = color;
         isLightSource = emitsLight;
@@ -114,6 +116,16 @@ public class Torus implements Component{
     @Override
     public void setPosition(Vec3D pos) {
         this.pos = pos;
+    }
+
+    @Override
+    public boolean isShape() {
+        return false;
+    }
+
+    @Override
+    public double getReflection() {
+        return reflection;
     }
 
     public String toString() {

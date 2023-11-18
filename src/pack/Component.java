@@ -17,5 +17,7 @@ public interface Component {
     public void setHitPoint(Vec3D point);
     public void remove();
     public void setPosition(Vec3D pos);
+    public boolean isShape();
 
+    double getReflection();
 }

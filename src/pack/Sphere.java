@@ -10,6 +10,7 @@ public class Sphere implements Component{
     Window w;
     boolean isLightSource;
     Vec3D hit;
+    double reflection;
 
     public Sphere(Vec3D position, double radius, Color color, boolean emitsLight) {
         pos = position;
@@ -18,8 +19,9 @@ public class Sphere implements Component{
         isLightSource = emitsLight;
         setParams();
     }
-    public Sphere(double x, double y, double z, double radius, Color color, boolean emitsLight) {
+    public Sphere(double x, double y, double z, double radius, Color color, boolean emitsLight, double reflection) {
         pos = new Vec3D(x,y,z);
+        this.reflection = reflection;
         Radius = radius;
         c = color;
         isLightSource = emitsLight;
@@ -75,6 +77,16 @@ public class Sphere implements Component{
     @Override
     public void setPosition(Vec3D pos) {
         this.pos = pos;
+    }
+
+    @Override
+    public boolean isShape() {
+        return false;
+    }
+
+    @Override
+    public double getReflection() {
+        return reflection;
     }
 
     public String toString() {

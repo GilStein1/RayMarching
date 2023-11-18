@@ -10,16 +10,19 @@ public class Cube implements Component{
     Window w;
     boolean isLightSource;
     Vec3D hit;
+    double reflection = 0.7;
 
-    public Cube(Vec3D position, Vec3D dimensions, Color color, boolean emitsLight) {
+    public Cube(Vec3D position, Vec3D dimensions, Color color, boolean emitsLight,double reflection) {
         pos = position;
+        this.reflection = reflection;
         this.dimensions = dimensions;
         c = color;
         isLightSource = emitsLight;
         setParams();
     }
-    public Cube(double x, double y, double z, Vec3D dimensions, Color color, boolean emitsLight) {
+    public Cube(double x, double y, double z, Vec3D dimensions, Color color, boolean emitsLight, double reflection) {
         pos = new Vec3D(x,y,z);
+        this.reflection = reflection;
         this.dimensions = dimensions;
         c = color;
         isLightSource = emitsLight;
@@ -80,6 +83,16 @@ public class Cube implements Component{
     @Override
     public void setPosition(Vec3D pos) {
         this.pos = pos;
+    }
+
+    @Override
+    public boolean isShape() {
+        return false;
+    }
+
+    @Override
+    public double getReflection() {
+        return reflection;
     }
 
     public String toString() {

@@ -13,14 +13,29 @@ public class Main {
 
         //Mandlebulb m = new Mandlebulb(new Vec3D(0,0,-40),Color.WHITE);
 
-        Sphere s = new Sphere(-3,20,-40, 10, Color.WHITE,false);
 
-        Torus s2 = new Torus(10,20,-40,0,0,0,new Vec2D(10,4), Color.BLUE,false);
+//
+//        Triangle t = new Triangle(new Vec3D(-3,20,-41),new Vec3D(10,22,-40),new Vec3D(7,10,-35),Color.WHITE,false);
+//
+//        Shape S = new Shape(s2,s,Color.WHITE,10);
 
-        Shape S = new Shape(s2,s,Color.WHITE,10);
+        Torus s2 = new Torus(10,0,-40,0,0,0,new Vec2D(10,4), Color.BLUE,false,0.1);
+//        Torus s3 = new Torus(40,0,-40,0,0,0,new Vec2D(10,4), Color.WHITE,false,0.01);
+        Sphere s = new Sphere(-3,0,-40, 10, Color.WHITE,false,0.1);
+        Shape S = new Shape(s2,s,Color.WHITE,10,0.01);
+
+//        LoadShape ls = new LoadShape(new Vec3D(-3,0,-41),Color.WHITE,0,0.3,"src//ImageToStl.com_suzanne_blender_monkey.obj");
+
         System.out.println("start");
 
-        w.setCameraPos(new Vec3D(0,10,0));
+        w.setCameraPos(new Vec3D(0,0,0));
+
+        w.render();
+
+        while (true) {
+            w.update();
+        }
+
 
 //        for(int i = 0; i < 10000; i++) {
 //            System.out.println(" ");
@@ -30,7 +45,7 @@ public class Main {
 //        w.update();
 //        w.update();
 
-        int count = 0;
+
 
 //        while (count < 3000) {
 //
