@@ -9,6 +9,7 @@ public class Shape implements Component{
     Window w;
     Vec3D pos;
     Vec3D hit;
+    Vec3D nHit;
     double reflection = 0.7;
     double mergeParameter;
 
@@ -27,7 +28,7 @@ public class Shape implements Component{
         w.add(this);
 
     }
-    public double smoothMin(double d1, double d2, double k) {
+    public static double smoothMin(double d1, double d2, double k) {
 
         double h = Math.max(k - Math.abs(d1 - d2),0)/k;
 
@@ -43,6 +44,7 @@ public class Shape implements Component{
         }
 
         return (smoothMin(coms[0].getEstimatedDistance(point),coms[1].getEstimatedDistance(point),mergeParameter));
+//        return Math.max(-coms[0].getEstimatedDistance(point),coms[1].getEstimatedDistance(point));
     }
 
     @Override
@@ -68,6 +70,14 @@ public class Shape implements Component{
     @Override
     public void setHitPoint(Vec3D point) {
         hit = point;
+    }
+    @Override
+    public void setNormalHitPoint(Vec3D point) {
+        this.nHit = point;
+    }
+    @Override
+    public Vec3D getNormalHitPoint() {
+        return nHit;
     }
 
     @Override

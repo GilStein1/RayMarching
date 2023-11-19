@@ -74,6 +74,7 @@ public class Window extends JPanel {
 //                    render(0,112);
 //                    render(0,112/2);
                     render(0,defaultScreenWidth/4);
+//                    render(0,defaultScreenWidth);
                     d1 = true;
                 }
 
@@ -209,11 +210,14 @@ public class Window extends JPanel {
         }
         return instance;
     }
+    public JFrame getFrame() {
+        return frame;
+    }
     public Component rayMarch(Ray ray) {
 
-//        System.out.println(ray);
-
         double minDistance = 0;
+
+//        System.out.println("m");
 
         Component closest = null;
 
@@ -224,23 +228,17 @@ public class Window extends JPanel {
 
         Vec3D d = ray.getCopyOfDirection();
 
+        d.setY(d.y + 0.0001);
+
         double x,y,z;
         x = 0;
         y = 0;
         z = 0;
 
-//        System.out.println("_______");
-
-//        System.out.println(Math.toDegrees(Math.atan2(d.z,d.x)));
-//        System.out.println(Math.toDegrees(Math.atan2(d.y,Math.sqrt(d.x*d.x + d.z*d.z))));
-//        System.out.println(d.y);
-//        if(d.z > 0.5) {
-//            System.out.println(d.z);
-//        }
+        Vec3D[] distances = new Vec3D[4];
+        Arrays.fill(distances,null);
 
         while (stop) {
-
-//            System.out.println(pos);
 
             minDistance = shapeList.get(0).getEstimatedDistance(pos);
             closest = shapeList.get(0);
@@ -255,12 +253,6 @@ public class Window extends JPanel {
                 }
 
             }
-
-
-//            x = (xz < 0)? 1 : -1;
-
-//            System.out.println(minDistance);
-
 
             x = d.x * minDistance;
             y = d.y * minDistance;
@@ -271,143 +263,57 @@ public class Window extends JPanel {
             pos.y = pos.y - y;
             pos.z = pos.z - z;
 
+            distances[3] = distances[2];
+            distances[2] = distances[1];
+            distances[1] = distances[0];
+            distances[0] = new Vec3D(pos);
+
+//            System.out.println(d);
+
             stop = !((minDistance < 0.0002) || (minDistance > 100));
         }
+
+//        pos.x = pos.x + x*5;
+//        pos.y = pos.y + y*5;
+//        pos.z = pos.z + z*5;
 
         if(minDistance > 100) {
             closest = null;
         }
         else {
-            closest.setHitPoint(pos);
-            //System.out.println(closest.getEstimatedDistance(pos));
-            //System.out.println("(" + x + "," + y + "," + z + ")");
-        }
 
-
-
-
-
-        return closest;
-
-    }
-    public Component rayMarch(double xz, double xy, Vec3D position) {
-
-//        xz = xz%360;
-//        xy = xy%360;
-//
-//        xz = (xz > 180)? xz - 360 : xz;
-//
-//        xy = (xy > 180)? xy - 360 : xy;
-
-        xz = Math.toRadians(xz + 0.01);
-        xy = Math.toRadians(xy + 0.01);
-
-        Vec3D pos = new Vec3D(position);
-        //System.out.println(pos);
-
-        boolean stop = true;
-        double temp;
-
-        double minDistance = 0;
-
-        Component closest = null;
-
-        double x,y,z;
-        x = 0;
-        y = 0;
-        z = 0;
-
-        while (stop) {
-            //System.out.println("step");
-
-//            if(pos != null) {
-//                System.out.println(pos);
-//            }
-
-            minDistance = shapeList.get(0).getEstimatedDistance(pos);
-            closest = shapeList.get(0);
-
-            for(Component c : shapeList) {
-
-                //minDistance = Math.min(minDistance,c.getEstimatedDistance(pos));
-
-                temp = c.getEstimatedDistance(pos);
-
-                if(temp < minDistance) {
-                    minDistance = temp;
-                    closest = c;
-                }
+            if(distances[3] != null) {
+                closest.setHitPoint(distances[3]);
+            }
+            if(distances[2] != null) {
+                closest.setHitPoint(distances[2]);
+//                System.out.println("it");
+            }
+            else if(distances[1] != null) {
+                distances[1].setX(distances[1].x + x);
+                distances[1].setY(distances[1].y + y);
+                distances[1].setZ(distances[1].z + z);
+                closest.setHitPoint(new Vec3D(distances[1]));
+//                System.out.println("it2");
 
             }
-            //System.out.println("xz = " + xz + "xy = " + xy + "distance = " + minDistance);
+            else if(distances[0] != null) {
+                closest.setHitPoint(new Vec3D(distances[0]));
 
+            }
 
-            double a1;
-
-            //double a2 = Math.sqrt((minDistance * minDistance * a1) /(1 + a1));
-
-
-//            y = ((xy > 0)? (a2) : -(a2));
-//
-//            a1 = Math.cos(xz) * Math.cos(xz);
-//
-//            a2 = Math.sqrt((minDistance * minDistance * a1) / (1 + a1));
-//
-//            x = ((xz > 0)? (a2) : -(a2));
-//
-//            a1 = Math.sqrt(x*x + y*y);
-//
-//            z = a1*Math.sin(xz);
-
-            x = (xz < 0)? 1 : -1;
-            //z = (xz < 0)? (x/Math.tan(xz)) : -(x/Math.tan(xz));
-            z = (x/Math.tan(xz));
-            y = Math.tan(xy)*Math.sqrt(x*x + z*z);
-
-            a1 = Math.sqrt(x*x + y*y + z*z);
-
-            x /= a1;
-            y /= a1;
-            z /= a1;
-
-            x *= minDistance;
-            y *= minDistance;
-            z *= minDistance;
-
-            pos.x = pos.x + x;
-            pos.y = pos.y + y;
-            pos.z = pos.z + z;
-
-            stop = !((minDistance < 0.02) || (minDistance > 600));
-            //System.out.println(minDistance);
-
-            //System.out.println(pos + ", " + Math.toDegrees(xz) + "," + Math.toDegrees(xy) + ", distance = " + minDistance);
-
-//            System.out.println(minDistance*minDistance - pos.x*pos.x - pos.y*pos.y);
-//
-//            a2 = Math.sqrt(Math.abs(minDistance*minDistance - pos.x*pos.x - pos.y*pos.y));
-//
-//            pos.z = pos.z + ((xz > 0)? a2 : -a2);
-
-        }
-
-//        pos.x = pos.x - 1*x + Math.abs(x)*2/x;
-//        pos.y = pos.y - 1*y + Math.abs(y)*2/y;
-//        pos.z = pos.z - 1*z + Math.abs(z)*2/z;
-
-
-        if(minDistance > 600) {
-            closest = null;
-        }
-        else {
-            closest.setHitPoint(pos);
+            closest.setNormalHitPoint(new Vec3D(pos));
             //System.out.println(closest.getEstimatedDistance(pos));
             //System.out.println("(" + x + "," + y + "," + z + ")");
         }
 
-        return closest;
-    }
 
+
+
+
+        return closest;
+
+    }
     public void render(int imin, int imax) {
 
         Component temp;
@@ -442,7 +348,7 @@ public class Window extends JPanel {
 
                     if(temp != null) {
 
-                        points[0] = new Vec3D(temp.getHitPoint());
+                        points[0] = new Vec3D(temp.getNormalHitPoint());
 
                         //temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0 + 0.1, (((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0),cameraPos);
 
@@ -450,7 +356,7 @@ public class Window extends JPanel {
 
 
                         if(temp != null) {
-                            points[1] = new Vec3D(temp.getHitPoint());
+                            points[1] = new Vec3D(temp.getNormalHitPoint());
 
                             //temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0, ((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0 + 0.1,cameraPos);
 
@@ -459,7 +365,7 @@ public class Window extends JPanel {
                             if(temp != null) {
 
                                 //System.out.println("got here");
-                                points[2] = new Vec3D(temp.getHitPoint());
+                                points[2] = new Vec3D(temp.getNormalHitPoint());
 
                                 double[] tempp = new double[3];
 
@@ -483,12 +389,12 @@ public class Window extends JPanel {
 
                                 Component hit2 = rayMarch(ref);
 
-                                if(hit2 != null) {
+                                if(hit2 == null) {
 
 //                                    System.out.println("sky");
 
                                     int u = (int)((0.5 + Math.atan2(ref.getDirection().z,ref.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
-                                    int v = (int)((0.5 + Math.asin(ref.getDirection().y)/Math.PI)*sky.getHeight());
+                                    int v = (int)(((0.5 + Math.asin(ref.getDirection().y)/Math.PI))*sky.getHeight());
 
 //                                System.out.println("(" + u + "," + v + ")");
 
@@ -496,8 +402,150 @@ public class Window extends JPanel {
 
                                 }
                                 else {
-//                                    colorArray[i][j] = temp.getColor();
-                                    colorArray[i][j] = Color.BLACK;
+                                    //colorArray[i][j] = temp.getColor();
+
+                                    Component secHit = rayMarch(ref);
+
+                                    if(secHit != null) {
+                                        points[0] = secHit.getNormalHitPoint();
+                                    }
+
+                                    Ray r1 = new Ray(ref);
+                                    r1.getDirection().setY(ref.getDirection().y + 0.1);
+
+                                    Ray r2 = new Ray(ref);
+                                    r2.getDirection().setX(ref.getDirection().x + 0.1);
+
+
+
+                                    Component secHit2 = rayMarch(r1);
+
+                                    if(secHit2 != null) {
+                                        points[1] = secHit2.getNormalHitPoint();
+                                    }
+
+                                    Component secHit3 = rayMarch(r2);
+
+                                    if(secHit3 != null) {
+                                        points[2] = secHit3.getNormalHitPoint();
+                                    }
+
+                                    if(secHit != null && secHit2 != null && secHit3 != null) {
+
+
+
+//                                        points[0] = secHit.getNormalHitPoint();
+//                                        points[1] = secHit2.getNormalHitPoint();
+//                                        points[2] = secHit3.getNormalHitPoint();
+
+                                        points[0].setX(points[0].x + 0.01);
+                                        points[1].setY(points[1].y + 0.01);
+                                        points[2].setZ(points[2].z + 0.01);
+
+//                                        points[0].setY(points[0].y - 0.01);
+//                                        points[1].setZ(points[1].z - 0.01);
+//                                        points[2].setX(points[2].x - 0.01);
+//
+//                                        points[0].setZ(points[0].z - 0.02);
+//                                        points[1].setX(points[1].x - 0.02);
+//                                        points[2].setY(points[2].y - 0.02);
+
+
+                                        tempp[0] = (points[0].y - points[1].y) * (points[0].z - points[2].z) - (points[0].z - points[1].z) * (points[0].y - points[2].y);
+                                        tempp[1] = (points[0].z - points[1].z) * (points[0].x - points[2].x) - (points[0].x - points[1].x) * (points[0].z - points[2].z);
+                                        tempp[2] = (points[0].x - points[1].x) * (points[0].y - points[2].y) - (points[0].y - points[1].y) * (points[0].x - points[2].x);
+
+//                                        System.out.println(points[2].z);
+//                                        System.out.println(tempp[1]);
+//                                        System.out.println(tempp[2]);
+//
+//                                        System.out.println(ref);
+//                                        System.out.println(r1);
+//                                        System.out.println(r2);
+//
+//                                        System.out.println(points[0]);
+//                                        System.out.println(points[1]);
+//                                        System.out.println(points[2]);
+
+                                        l = Math.sqrt(tempp[0]*tempp[0] + tempp[1]*tempp[1] + tempp[2]*tempp[2]);
+//                                        System.out.println(" l = " + l);
+
+                                        tempp[0] /= l;
+                                        tempp[1] /= l;
+                                        tempp[2] /= l;
+
+
+
+                                        dotP = tempp[0]*ref.getDirection().x + tempp[1]*ref.getDirection().y + tempp[2]*ref.getDirection().z;
+
+                                        rx = ref.getDirection().x - 2*dotP*tempp[0];
+                                        ry = ref.getDirection().y - 2*dotP*tempp[1];
+                                        rz = ref.getDirection().z - 2*dotP*tempp[2];
+
+
+
+                                        Ray ref2 = new Ray(secHit.getHitPoint(),new Vec3D(rx,ry,rz));
+
+
+                                        Component hit3 = rayMarch(ref2);
+
+
+
+                                        if(hit3 == null || true) {
+                                            int u = (int)((0.5 + Math.atan2(ref2.getDirection().z,ref2.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
+                                            int v = (int)(((0.5 + Math.asin(ref2.getDirection().y)/Math.PI))*sky.getHeight());
+
+                                            double red = temp.getReflection()*temp.getColor().getRed() + secHit.getReflection()*secHit.getColor().getRed() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)));
+                                            double green = temp.getReflection()*temp.getColor().getGreen() + secHit.getReflection()*secHit.getColor().getGreen() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)));
+                                            double blue = temp.getReflection()*temp.getColor().getBlue() + secHit.getReflection()*secHit.getColor().getBlue() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+
+                                            if(red > 255) {
+                                                red = 255;
+                                            }
+                                            if(green > 255){
+                                                green = 255;
+                                            }
+                                            if(blue > 255) {
+                                                blue = 255;
+                                            }
+                                            colorArray[i][j] = new Color((int)red,(int)green,(int)blue);
+//                                            System.out.println(colorArray[i][j]);
+
+                                            //colorArray[i][j] = new Color((int)(temp.getColor().getRed()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getColor().getGreen()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getColor().getBlue()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                        }
+                                        else {
+//                                            System.out.println("NULL");
+
+                                            int u = (int)((0.5 + Math.atan2(ref2.getDirection().z,ref2.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
+                                            int v = (int)(((0.5 + Math.asin(ref2.getDirection().y)/Math.PI))*sky.getHeight());
+
+                                            double red = temp.getReflection()*temp.getColor().getRed() + secHit.getReflection()*secHit.getColor().getRed() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*(hit3.getColor().getRed())));
+                                            double green = temp.getReflection()*temp.getColor().getGreen() + secHit.getReflection()*secHit.getColor().getGreen() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((hit3.getColor().getGreen()))));
+                                            double blue = temp.getReflection()*temp.getColor().getBlue() + secHit.getReflection()*secHit.getColor().getBlue() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((hit3.getColor().getBlue()))));
+
+                                            if(red > 255) {
+                                                red = 255;
+                                            }
+                                            if(green > 255){
+                                                green = 255;
+                                            }
+                                            if(blue > 255) {
+                                                blue = 255;
+                                            }
+                                            colorArray[i][j] = new Color((int)red,(int)green,(int)blue);
+
+                                        }
+
+                                    }
+                                    else {
+
+                                        int u = (int)((0.5 + Math.atan2(ref.getDirection().z,ref.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
+                                        int v = (int)(((0.5 + Math.asin(ref.getDirection().y)/Math.PI))*sky.getHeight());
+
+                                        colorArray[i][j] = new Color((int)(temp.getColor().getRed()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getColor().getGreen()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getColor().getBlue()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                    }
+
+//                                    colorArray[i][j] = Color.BLACK;
                                 }
 
                                 //double colorMultiplier = Math.abs(((light.x) * (tempp[0]) + light.y*tempp[1] + light.z*tempp[2] + 30)/60.0);
@@ -733,6 +781,10 @@ public class Window extends JPanel {
                 }
             }
         }
+
+        graphicsThing.setColor(Color.BLACK);
+        graphicsThing.drawString("W,A,S,D - for movement",0,10);
+        graphicsThing.drawString("F,G - for moving the sphere",0,20);
 
         graphicsThing.dispose();
 

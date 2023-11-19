@@ -10,6 +10,7 @@ public class Cube implements Component{
     Window w;
     boolean isLightSource;
     Vec3D hit;
+    Vec3D nHit;
     double reflection = 0.7;
 
     public Cube(Vec3D position, Vec3D dimensions, Color color, boolean emitsLight,double reflection) {
@@ -48,6 +49,14 @@ public class Cube implements Component{
         q.z = Math.abs(p.z) - dimensions.z;
 
         return Math.sqrt(Math.max(q.x,0)*Math.max(q.x,0) + Math.max(q.y,0)*Math.max(q.y,0) + Math.max(q.z,0)*Math.max(q.z,0)) + Math.min(Math.max(q.x, Math.max(q.y, q.z)), 0.0f);
+    }
+    @Override
+    public void setNormalHitPoint(Vec3D point) {
+        this.nHit = point;
+    }
+    @Override
+    public Vec3D getNormalHitPoint() {
+        return nHit;
     }
 
     @Override

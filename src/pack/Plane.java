@@ -2,10 +2,9 @@ package pack;
 
 import java.awt.*;
 
-public class Sphere implements Component{
+public class Plane implements Component{
 
-    double Radius;
-    Vec3D pos;
+    double pos;
     Color c;
     Window w;
     boolean isLightSource;
@@ -13,21 +12,13 @@ public class Sphere implements Component{
     Vec3D nHit;
     double reflection;
 
-    public Sphere(Vec3D position, double radius, Color color, boolean emitsLight) {
-        pos = position;
-        Radius = radius;
-        c = color;
-        isLightSource = emitsLight;
-        setParams();
-    }
-    public Sphere(double x, double y, double z, double radius, Color color, boolean emitsLight, double reflection) {
-        pos = new Vec3D(x,y,z);
+    public Plane(double y, double reflection) {
+        pos = y;
         this.reflection = reflection;
-        Radius = radius;
-        c = color;
-        isLightSource = emitsLight;
+        isLightSource = false;
         setParams();
     }
+
     private void setParams() {
         w = Window.getInstance();
         w.add(this);
@@ -36,18 +27,14 @@ public class Sphere implements Component{
     @Override
     public double getEstimatedDistance(Vec3D point) {
 
-        //System.out.println("(" + pos.x + "," + pos.y + "," + pos.z + ") " + point);
-
-//        if(point != null) {
-//            System.out.println("(" + pos.x + "," + pos.y + "," + pos.z + ") " + point);
-//        }
-
-        return Math.sqrt((point.x - pos.x)*(point.x - pos.x) + (point.y - pos.y)*(point.y - pos.y) + (point.z - pos.z)*(point.z - pos.z)) - Radius;
+        return Math.abs(point.y - pos);
     }
 
     @Override
     public Color getColor() {
-        return c;
+        int a = ((Math.abs((int)hit.x/5)%2 == 0)? 1 : -1);
+        int b = ((Math.abs((int)hit.z/5)%2 == 0)? 1 : -1);
+        return  (a*b > 0)? Color.GRAY : Color.WHITE;
     }
 
     @Override
@@ -57,7 +44,7 @@ public class Sphere implements Component{
 
     @Override
     public Vec3D getPosition() {
-        return pos;
+        return new Vec3D(0,pos,0);
     }
 
     @Override
@@ -85,7 +72,7 @@ public class Sphere implements Component{
 
     @Override
     public void setPosition(Vec3D pos) {
-        this.pos = pos;
+        this.pos = pos.y;
     }
 
     @Override
@@ -99,7 +86,7 @@ public class Sphere implements Component{
     }
 
     public String toString() {
-        return pos + ", Radius = " + Radius + "Color = " + c + ", is a light source = " + isLightSource;
+        return "y = " + pos + " reflection = " + reflection;
     }
 
 }

@@ -9,6 +9,10 @@ public class Ray {
         this.d = d;
         d.normalize();
     }
+    public Ray(Ray ray) {
+        this.pos = ray.getCopyOfPos();
+        this.d = ray.getCopyOfDirection();
+    }
     public Ray(double x, double y, double z, double xd, double yd, double zd) {
         pos = new Vec3D(x,y,z);
         d = new Vec3D(xd, yd, zd);

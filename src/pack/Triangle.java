@@ -9,6 +9,7 @@ public class Triangle implements Component{
     Window w;
     boolean isLightSource;
     Vec3D hit;
+    Vec3D nHit;
     Vec3D p1,p2,p3;
 
 //    public Triangle(Vec3D position, double radius, Color color, boolean emitsLight) {
@@ -126,6 +127,14 @@ public class Triangle implements Component{
     @Override
     public Vec3D getHitPoint() {
         return hit;
+    }
+    @Override
+    public void setNormalHitPoint(Vec3D point) {
+        this.nHit = point;
+    }
+    @Override
+    public Vec3D getNormalHitPoint() {
+        return nHit;
     }
 
     @Override

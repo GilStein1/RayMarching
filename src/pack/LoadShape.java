@@ -14,6 +14,7 @@ public class LoadShape implements Component{
     Window w;
     Vec3D pos;
     Vec3D hit;
+    Vec3D nHit;
     double reflection = 0.7;
     double mergeParameter;
     Component shape;
@@ -151,6 +152,14 @@ public class LoadShape implements Component{
     @Override
     public Vec3D getHitPoint() {
         return hit;
+    }
+    @Override
+    public void setNormalHitPoint(Vec3D point) {
+        this.nHit = point;
+    }
+    @Override
+    public Vec3D getNormalHitPoint() {
+        return nHit;
     }
 
     @Override

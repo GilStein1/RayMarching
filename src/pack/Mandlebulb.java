@@ -7,6 +7,7 @@ public class Mandlebulb implements Component{
     Color c;
     Vec3D pos;
     Vec3D hit;
+    Vec3D nHit;
     Window w;
 
     public Mandlebulb(Vec3D pos, Color color) {
@@ -93,6 +94,15 @@ public class Mandlebulb implements Component{
     @Override
     public void setHitPoint(Vec3D point) {
         hit = point;
+    }
+    @Override
+    public void setNormalHitPoint(Vec3D point) {
+        this.nHit = point;
+    }
+
+    @Override
+    public Vec3D getNormalHitPoint() {
+        return nHit;
     }
 
     @Override

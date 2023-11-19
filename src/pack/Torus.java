@@ -10,6 +10,7 @@ public class Torus implements Component{
     Window w;
     boolean isLightSource;
     Vec3D hit;
+    Vec3D nHit;
     Vec3D rotation;
     double reflection;
 
@@ -106,6 +107,15 @@ public class Torus implements Component{
     @Override
     public void setHitPoint(Vec3D point) {
         hit = point;
+    }
+
+    @Override
+    public void setNormalHitPoint(Vec3D point) {
+        this.nHit = point;
+    }
+    @Override
+    public Vec3D getNormalHitPoint() {
+        return nHit;
     }
 
     @Override
