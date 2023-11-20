@@ -213,13 +213,15 @@ public class Window extends JPanel {
     public JFrame getFrame() {
         return frame;
     }
-    public Component rayMarch(Ray ray) {
+    public HitPair rayMarch(Ray ray) {
 
         double minDistance = 0;
 
 //        System.out.println("m");
 
         Component closest = null;
+
+        HitPair pair = new HitPair(closest,new Vec3D(0,0,0),new Vec3D(0,0,0));
 
         Vec3D pos = ray.getCopyOfPos();
 
@@ -279,14 +281,17 @@ public class Window extends JPanel {
 
         if(minDistance > 100) {
             closest = null;
+            pair.c = null;
         }
         else {
 
             if(distances[3] != null) {
                 closest.setHitPoint(distances[3]);
+                pair.hit = distances[3];
             }
             if(distances[2] != null) {
                 closest.setHitPoint(distances[2]);
+                pair.hit = distances[2];
 //                System.out.println("it");
             }
             else if(distances[1] != null) {
@@ -294,15 +299,17 @@ public class Window extends JPanel {
                 distances[1].setY(distances[1].y + y);
                 distances[1].setZ(distances[1].z + z);
                 closest.setHitPoint(new Vec3D(distances[1]));
+                pair.hit = distances[1];
 //                System.out.println("it2");
 
             }
             else if(distances[0] != null) {
                 closest.setHitPoint(new Vec3D(distances[0]));
-
+                pair.hit = distances[0];
             }
 
             closest.setNormalHitPoint(new Vec3D(pos));
+            pair.nHit = new Vec3D(pos);
             //System.out.println(closest.getEstimatedDistance(pos));
             //System.out.println("(" + x + "," + y + "," + z + ")");
         }
@@ -310,13 +317,13 @@ public class Window extends JPanel {
 
 
 
-
-        return closest;
+        pair.c = closest;
+        return pair;
 
     }
     public void render(int imin, int imax) {
 
-        Component temp;
+        HitPair temp;
 
         for(int i = imin; i < imax; i++) {
             for(int j = 0; j < colorArray[i].length; j++) {
@@ -346,9 +353,9 @@ public class Window extends JPanel {
 //                    System.out.println(((i+1)/ (double)colorArray.length)*fov - fov/2.0);
                     //System.out.println(((((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0)));
 
-                    if(temp != null) {
+                    if(temp.c != null) {
 
-                        points[0] = new Vec3D(temp.getNormalHitPoint());
+                        points[0] = new Vec3D(temp.nHit);
 
                         //temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0 + 0.1, (((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0),cameraPos);
 
@@ -356,16 +363,16 @@ public class Window extends JPanel {
 
 
                         if(temp != null) {
-                            points[1] = new Vec3D(temp.getNormalHitPoint());
+                            points[1] = new Vec3D(temp.nHit);
 
                             //temp = rayMarch(((i+1)/ (double)colorArray.length)*fov - fov/2.0, ((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0 + 0.1,cameraPos);
 
                             temp = rayMarch(new Ray(cameraPos,new Vec3D(Math.sin(Math.toRadians(cameraRotation.y + ((i+1)/ (double)colorArray.length)*fov - fov/2.0)),Math.sin(Math.toRadians(cameraRotation.x + (((j+1)/ (double)colorArray[i].length)*fov*colorArray[i].length/colorArray.length - fov*colorArray[i].length/colorArray.length/2.0 + 0.1))),Math.cos(Math.toRadians(((i+1)/ (double)colorArray.length)*fov - fov/2.0)))));
 
-                            if(temp != null) {
+                            if(temp.c != null) {
 
                                 //System.out.println("got here");
-                                points[2] = new Vec3D(temp.getNormalHitPoint());
+                                points[2] = new Vec3D(temp.nHit);
 
                                 double[] tempp = new double[3];
 
@@ -385,11 +392,11 @@ public class Window extends JPanel {
                                 double ry = r.getDirection().y - 2*dotP*tempp[1];
                                 double rz = r.getDirection().z - 2*dotP*tempp[2];
 
-                                Ray ref = new Ray(temp.getHitPoint(),new Vec3D(rx,ry,rz));
+                                Ray ref = new Ray(temp.hit,new Vec3D(rx,ry,rz));
 
-                                Component hit2 = rayMarch(ref);
+                                HitPair hit2 = rayMarch(ref);
 
-                                if(hit2 == null) {
+                                if(hit2.c == null) {
 
 //                                    System.out.println("sky");
 
@@ -398,16 +405,16 @@ public class Window extends JPanel {
 
 //                                System.out.println("(" + u + "," + v + ")");
 
-                                    colorArray[i][j] = new Color((int)(temp.getColor().getRed()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getColor().getGreen()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getColor().getBlue()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                    colorArray[i][j] = new Color((int)(temp.c.getColor().getRed()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.c.getColor().getGreen()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.c.getColor().getBlue()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
 
                                 }
                                 else {
                                     //colorArray[i][j] = temp.getColor();
 
-                                    Component secHit = rayMarch(ref);
+                                    HitPair secHit = rayMarch(ref);
 
                                     if(secHit != null) {
-                                        points[0] = secHit.getNormalHitPoint();
+                                        points[0] = secHit.nHit;
                                     }
 
                                     Ray r1 = new Ray(ref);
@@ -418,19 +425,19 @@ public class Window extends JPanel {
 
 
 
-                                    Component secHit2 = rayMarch(r1);
+                                    HitPair secHit2 = rayMarch(r1);
 
                                     if(secHit2 != null) {
-                                        points[1] = secHit2.getNormalHitPoint();
+                                        points[1] = secHit2.nHit;
                                     }
 
-                                    Component secHit3 = rayMarch(r2);
+                                    HitPair secHit3 = rayMarch(r2);
 
                                     if(secHit3 != null) {
-                                        points[2] = secHit3.getNormalHitPoint();
+                                        points[2] = secHit3.nHit;
                                     }
 
-                                    if(secHit != null && secHit2 != null && secHit3 != null) {
+                                    if(secHit.getC() != null && secHit2.getC() != null && secHit3.getC() != null) {
 
 
 
@@ -484,20 +491,20 @@ public class Window extends JPanel {
 
 
 
-                                        Ray ref2 = new Ray(secHit.getHitPoint(),new Vec3D(rx,ry,rz));
+                                        Ray ref2 = new Ray(secHit.hit,new Vec3D(rx,ry,rz));
 
 
-                                        Component hit3 = rayMarch(ref2);
+                                        HitPair hit3 = rayMarch(ref2);
 
 
 
-                                        if(hit3 == null || true) {
+                                        if(hit3.c == null || true) {
                                             int u = (int)((0.5 + Math.atan2(ref2.getDirection().z,ref2.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
                                             int v = (int)(((0.5 + Math.asin(ref2.getDirection().y)/Math.PI))*sky.getHeight());
 
-                                            double red = temp.getReflection()*temp.getColor().getRed() + secHit.getReflection()*secHit.getColor().getRed() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)));
-                                            double green = temp.getReflection()*temp.getColor().getGreen() + secHit.getReflection()*secHit.getColor().getGreen() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)));
-                                            double blue = temp.getReflection()*temp.getColor().getBlue() + secHit.getReflection()*secHit.getColor().getBlue() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                            double red = temp.c.getReflection()*temp.c.getColor().getRed() + secHit.c.getReflection()*secHit.c.getColor().getRed() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)));
+                                            double green = temp.c.getReflection()*temp.c.getColor().getGreen() + secHit.c.getReflection()*secHit.c.getColor().getGreen() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)));
+                                            double blue = temp.c.getReflection()*temp.c.getColor().getBlue() + secHit.c.getReflection()*secHit.c.getColor().getBlue() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
 
                                             if(red > 255) {
                                                 red = 255;
@@ -519,9 +526,9 @@ public class Window extends JPanel {
                                             int u = (int)((0.5 + Math.atan2(ref2.getDirection().z,ref2.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
                                             int v = (int)(((0.5 + Math.asin(ref2.getDirection().y)/Math.PI))*sky.getHeight());
 
-                                            double red = temp.getReflection()*temp.getColor().getRed() + secHit.getReflection()*secHit.getColor().getRed() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*(hit3.getColor().getRed())));
-                                            double green = temp.getReflection()*temp.getColor().getGreen() + secHit.getReflection()*secHit.getColor().getGreen() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((hit3.getColor().getGreen()))));
-                                            double blue = temp.getReflection()*temp.getColor().getBlue() + secHit.getReflection()*secHit.getColor().getBlue() + ((temp.getReflection() + secHit2.getReflection() > 1)? 0 : ((1-temp.getReflection() - secHit2.getReflection())*((hit3.getColor().getBlue()))));
+                                            double red = temp.c.getReflection()*temp.c.getColor().getRed() + secHit.c.getReflection()*secHit.c.getColor().getRed() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*(hit3.c.getColor().getRed())));
+                                            double green = temp.c.getReflection()*temp.c.getColor().getGreen() + secHit.c.getReflection()*secHit.c.getColor().getGreen() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((hit3.c.getColor().getGreen()))));
+                                            double blue = temp.c.getReflection()*temp.c.getColor().getBlue() + secHit.c.getReflection()*secHit.c.getColor().getBlue() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((hit3.c.getColor().getBlue()))));
 
                                             if(red > 255) {
                                                 red = 255;
@@ -542,7 +549,7 @@ public class Window extends JPanel {
                                         int u = (int)((0.5 + Math.atan2(ref.getDirection().z,ref.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
                                         int v = (int)(((0.5 + Math.asin(ref.getDirection().y)/Math.PI))*sky.getHeight());
 
-                                        colorArray[i][j] = new Color((int)(temp.getColor().getRed()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getColor().getGreen()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getColor().getBlue()*temp.getReflection() + (1 - temp.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                        colorArray[i][j] = new Color((int)(temp.getC().getColor().getRed()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getC().getColor().getGreen()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getC().getColor().getBlue()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v)) & 0xFF)));
                                     }
 
 //                                    colorArray[i][j] = Color.BLACK;
