@@ -24,12 +24,12 @@ public class Main {
 
 //        Cube s2 = new Cube(10,0,-40,new Vec3D(7,7,7),Color.WHITE,false,0.1);
 
-//        Plane p = new Plane(-10,0.3);
+        Plane p = new Plane(-10,0.3);
 
-        Torus s2 = new Torus(10,0,-40,0,0,0,new Vec2D(10,4), Color.BLUE,false,0.1);
+//        Torus s2 = new Torus(10,0,-40,0,0,0,new Vec2D(10,4), Color.BLUE,false,0.1);
 //        Torus s3 = new Torus(40,0,-40,0,0,0,new Vec2D(10,4), Color.WHITE,false,0.01);
-        Sphere s = new Sphere(-3,0,-40, 10, Color.WHITE,false,0.1);
-        Shape S = new Shape(s2,s,Color.WHITE,10,0.01);
+        Sphere s = new Sphere(-3,0,-40, 10, Color.RED,false,0.3);
+//        Shape S = new Shape(s2,s,Color.WHITE,10,0.01);
 
 //        LoadShape ls = new LoadShape(new Vec3D(-3,0,-41),Color.WHITE,0,0.01,"src//ImageToStl.com_suzanne_blender_monkey.obj");
 

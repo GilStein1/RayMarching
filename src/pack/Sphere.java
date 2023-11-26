@@ -1,6 +1,9 @@
 package pack;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class Sphere implements Component{
 
@@ -12,6 +15,7 @@ public class Sphere implements Component{
     Vec3D hit;
     Vec3D nHit;
     double reflection;
+    BufferedImage texture;
 
     public Sphere(Vec3D position, double radius, Color color, boolean emitsLight) {
         pos = position;
@@ -27,6 +31,11 @@ public class Sphere implements Component{
         c = color;
         isLightSource = emitsLight;
         setParams();
+        try {
+            texture = ImageIO.read(getClass().getResourceAsStream("/01-3.jpg"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     private void setParams() {
         w = Window.getInstance();
@@ -46,8 +55,22 @@ public class Sphere implements Component{
     }
 
     @Override
-    public Color getColor() {
-        return c;
+    public Color getColor(Vec3D point) {
+
+        double x = -point.x - -pos.x;
+        double y = -point.y - -pos.y;
+        double z = -point.z - -pos.z;
+
+        double l = Math.sqrt(x*x + y*y + z*z);
+
+        x /= l;
+        y /= l;
+        z /= l;
+
+        int u = (int)((0.5 + Math.atan2(z,x)/(2.0*Math.PI))*texture.getWidth());
+        int v = (int)(((0.5 + Math.asin(y)/Math.PI))*texture.getHeight());
+
+        return new Color((texture.getRGB(u,v) >> 16) & 0xFF,(texture.getRGB(u,v) >> 8) & 0xFF,(texture.getRGB(u,v)) & 0xFF);
     }
 
     @Override

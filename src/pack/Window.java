@@ -405,7 +405,7 @@ public class Window extends JPanel {
 
 //                                System.out.println("(" + u + "," + v + ")");
 
-                                    colorArray[i][j] = new Color((int)(temp.c.getColor().getRed()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.c.getColor().getGreen()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.c.getColor().getBlue()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                    colorArray[i][j] = new Color((int)(temp.c.getColor(temp.hit).getRed()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.c.getColor(temp.hit).getGreen()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.c.getColor(temp.hit).getBlue()*temp.c.getReflection() + (1 - temp.c.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
 
                                 }
                                 else {
@@ -502,9 +502,9 @@ public class Window extends JPanel {
                                             int u = (int)((0.5 + Math.atan2(ref2.getDirection().z,ref2.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
                                             int v = (int)(((0.5 + Math.asin(ref2.getDirection().y)/Math.PI))*sky.getHeight());
 
-                                            double red = temp.c.getReflection()*temp.c.getColor().getRed() + secHit.c.getReflection()*secHit.c.getColor().getRed() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)));
-                                            double green = temp.c.getReflection()*temp.c.getColor().getGreen() + secHit.c.getReflection()*secHit.c.getColor().getGreen() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)));
-                                            double blue = temp.c.getReflection()*temp.c.getColor().getBlue() + secHit.c.getReflection()*secHit.c.getColor().getBlue() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                            double red = temp.c.getReflection()*temp.c.getColor(temp.hit).getRed() + secHit.c.getReflection()*secHit.c.getColor(secHit.hit).getRed() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)));
+                                            double green = temp.c.getReflection()*temp.c.getColor(temp.hit).getGreen() + secHit.c.getReflection()*secHit.c.getColor(secHit.hit).getGreen() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)));
+                                            double blue = temp.c.getReflection()*temp.c.getColor(temp.hit).getBlue() + secHit.c.getReflection()*secHit.c.getColor(secHit.hit).getBlue() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((sky.getRGB(u,v)) & 0xFF)));
 
                                             if(red > 255) {
                                                 red = 255;
@@ -526,9 +526,9 @@ public class Window extends JPanel {
                                             int u = (int)((0.5 + Math.atan2(ref2.getDirection().z,ref2.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
                                             int v = (int)(((0.5 + Math.asin(ref2.getDirection().y)/Math.PI))*sky.getHeight());
 
-                                            double red = temp.c.getReflection()*temp.c.getColor().getRed() + secHit.c.getReflection()*secHit.c.getColor().getRed() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*(hit3.c.getColor().getRed())));
-                                            double green = temp.c.getReflection()*temp.c.getColor().getGreen() + secHit.c.getReflection()*secHit.c.getColor().getGreen() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((hit3.c.getColor().getGreen()))));
-                                            double blue = temp.c.getReflection()*temp.c.getColor().getBlue() + secHit.c.getReflection()*secHit.c.getColor().getBlue() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((hit3.c.getColor().getBlue()))));
+                                            double red = temp.c.getReflection()*temp.c.getColor(temp.hit).getRed() + secHit.c.getReflection()*secHit.c.getColor(secHit.hit).getRed() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*(hit3.c.getColor(hit3.hit).getRed())));
+                                            double green = temp.c.getReflection()*temp.c.getColor(temp.hit).getGreen() + secHit.c.getReflection()*secHit.c.getColor(secHit.hit).getGreen() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((hit3.c.getColor(hit3.hit).getGreen()))));
+                                            double blue = temp.c.getReflection()*temp.c.getColor(temp.hit).getBlue() + secHit.c.getReflection()*secHit.c.getColor(secHit.hit).getBlue() + ((temp.c.getReflection() + secHit2.c.getReflection() > 1)? 0 : ((1-temp.c.getReflection() - secHit2.c.getReflection())*((hit3.c.getColor(hit3.hit).getBlue()))));
 
                                             if(red > 255) {
                                                 red = 255;
@@ -549,7 +549,7 @@ public class Window extends JPanel {
                                         int u = (int)((0.5 + Math.atan2(ref.getDirection().z,ref.getDirection().x)/(2.0*Math.PI))*sky.getWidth());
                                         int v = (int)(((0.5 + Math.asin(ref.getDirection().y)/Math.PI))*sky.getHeight());
 
-                                        colorArray[i][j] = new Color((int)(temp.getC().getColor().getRed()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getC().getColor().getGreen()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getC().getColor().getBlue()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v)) & 0xFF)));
+                                        colorArray[i][j] = new Color((int)(temp.getC().getColor(temp.hit).getRed()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v) >> 16) & 0xFF)),(int)(temp.getC().getColor(temp.hit).getGreen()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v) >> 8) & 0xFF)),(int)(temp.getC().getColor(temp.hit).getBlue()*temp.getC().getReflection() + (1 - temp.getC().getReflection())*((sky.getRGB(u,v)) & 0xFF)));
                                     }
 
 //                                    colorArray[i][j] = Color.BLACK;

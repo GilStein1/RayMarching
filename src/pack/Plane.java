@@ -31,9 +31,9 @@ public class Plane implements Component{
     }
 
     @Override
-    public Color getColor() {
-        int a = ((Math.abs((int)hit.x/5)%2 == 0)? 1 : -1);
-        int b = ((Math.abs((int)hit.z/5)%2 == 0)? 1 : -1);
+    public Color getColor(Vec3D point) {
+        int a = ((Math.abs((int)point.x/5)%2 == 0)? 1 : -1);
+        int b = ((Math.abs((int)point.z/5)%2 == 0)? 1 : -1);
         return  (a*b > 0)? Color.GRAY : Color.WHITE;
     }
 

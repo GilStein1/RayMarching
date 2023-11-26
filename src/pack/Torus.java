@@ -85,7 +85,7 @@ public class Torus implements Component{
     }
 
     @Override
-    public Color getColor() {
+    public Color getColor(Vec3D point) {
         return c;
     }
 

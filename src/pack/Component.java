@@ -6,7 +6,7 @@ public interface Component {
 
     public double getEstimatedDistance(Vec3D point);
 
-    public Color getColor();
+    public Color getColor(Vec3D point);
 
     public boolean isALightSource();
 
